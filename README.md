@@ -1,12 +1,153 @@
-AI Doctor 2.0 - Voice and Vision FastAPI ServiceThis project provides a backend API service that simulates a consultation with an AI doctor. It accepts a user's spoken question and a related image, processes them through advanced AI models, and returns a text transcription, a medical analysis, and a spoken audio response.This guide provides step-by-step instructions to set up your project environment, including the installation of FFmpeg and PortAudio, setting up a Python virtual environment, and running the application.Table of ContentsAPI ArchitecturePrerequisites: Installing FFmpeg and PortAudiomacOSLinuxWindowsSetting Up The ProjectEnvironment VariablesPython Virtual EnvironmentRunning the ApplicationOption 1: Running Locally with UvicornOption 2: Running with DockerInteracting with the APIAPI ArchitectureThe application is built as a FastAPI service that exposes a single primary endpoint. When a client sends an image and an audio file, the following happens:Speech-to-Text: The audio file is transcribed into text using the Groq API (running OpenAI's Whisper model).Multimodal Analysis: The transcribed text and the user's image are sent to a multimodal vision model on Groq to generate a medical analysis.Text-to-Speech: The AI-generated text analysis is converted into natural-sounding speech using the ElevenLabs API.JSON Response: The API returns a JSON object containing the transcription, the doctor's text response, and the doctor's audio response (as a Base64 encoded string).Prerequisites: Installing FFmpeg and PortAudioThese system-level libraries are required for audio processing and microphone access.macOSInstall Homebrew (if not already installed):/bin/bash -c "$(curl -fsSL [https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh](https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh))"
-Install FFmpeg and PortAudio:brew install ffmpeg portaudio
-LinuxFor Debian-based distributions (e.g., Ubuntu):Update the package list:sudo apt update
-Install FFmpeg and PortAudio:sudo apt install ffmpeg portaudio19-dev
-WindowsDownload and Set Up FFmpeg:Visit the official FFmpeg Downloads page and get a Windows build.Extract the files to a permanent location (e.g., C:\ffmpeg).Add the bin directory from the extracted folder (e.g., C:\ffmpeg\bin) to your system's PATH environment variable.Install PortAudio:Download the appropriate binaries from the official PortAudio Downloads page.Follow the installation instructions provided.Setting Up The ProjectEnvironment VariablesBefore running the application, you need to provide API keys for the services it uses. Create a file named .env in the root of the project directory and add your keys like this:GROQ_API_KEY="your_groq_api_key_here"
+AI Doctor 2.0 - Voice and Vision FastAPI Service
+This project provides a backend API service that simulates a consultation with an AI doctor. It accepts a user's spoken question and a related image, processes them through advanced AI models, and returns a text transcription, a medical analysis, and a spoken audio response.
+
+This guide provides step-by-step instructions to set up your project environment, including the installation of FFmpeg and PortAudio, setting up a Python virtual environment, and running the application.
+
+Table of Contents
+API Architecture
+
+Prerequisites: Installing FFmpeg and PortAudio
+
+macOS
+
+Linux
+
+Windows
+
+Setting Up The Project
+
+Environment Variables
+
+Python Virtual Environment
+
+Running the Application
+
+Option 1: Running Locally with Uvicorn
+
+Option 2: Running with Docker
+
+Interacting with the API
+
+API Architecture
+The application is built as a FastAPI service that exposes a single primary endpoint. When a client sends an image and an audio file, the following happens:
+
+Speech-to-Text: The audio file is transcribed into text using the Groq API (running OpenAI's Whisper model).
+
+Multimodal Analysis: The transcribed text and the user's image are sent to a multimodal vision model on Groq to generate a medical analysis.
+
+Text-to-Speech: The AI-generated text analysis is converted into natural-sounding speech using the ElevenLabs API.
+
+JSON Response: The API returns a JSON object containing the transcription, the doctor's text response, and the doctor's audio response (as a Base64 encoded string).
+
+Prerequisites: Installing FFmpeg and PortAudio
+These system-level libraries are required for audio processing and microphone access.
+
+macOS
+Install Homebrew (if not already installed):
+
+/bin/bash -c "$(curl -fsSL [https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh](https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh))"
+
+Install FFmpeg and PortAudio:
+
+brew install ffmpeg portaudio
+
+Linux
+For Debian-based distributions (e.g., Ubuntu):
+
+Update the package list:
+
+sudo apt update
+
+Install FFmpeg and PortAudio:
+
+sudo apt install ffmpeg portaudio19-dev
+
+Windows
+Download and Set Up FFmpeg:
+
+Visit the official FFmpeg Downloads page and get a Windows build.
+
+Extract the files to a permanent location (e.g., C:\ffmpeg).
+
+Add the bin directory from the extracted folder (e.g., C:\ffmpeg\bin) to your system's PATH environment variable.
+
+Install PortAudio:
+
+Download the appropriate binaries from the official PortAudio Downloads page.
+
+Follow the installation instructions provided.
+
+Setting Up The Project
+Environment Variables
+Before running the application, you need to provide API keys for the services it uses. Create a file named .env in the root of the project directory and add your keys like this:
+
+GROQ_API_KEY="your_groq_api_key_here"
 ELEVEN_API_KEY="your_elevenlabs_api_key_here"
-Setting Up a Python Virtual EnvironmentIt is highly recommended to use a virtual environment to manage project dependencies.Using pip and venv (Recommended)Create a Virtual Environment:python -m venv venv
-Activate the Virtual Environment:macOS/Linux: source venv/bin/activateWindows: venv\Scripts\activateInstall Dependencies:pip install -r requirements.txt
-Running the ApplicationOption 1: Running Locally with UvicornThis method is ideal for development as it provides auto-reloading when you make code changes.Start the Server:Make sure your virtual environment is activated and you are in the project's root directory. Then run:uvicorn main:app --reload
-The API will now be running and accessible at http://127.0.0.1:8000.Option 2: Running with DockerThis is the recommended method for a consistent and portable deployment.Build the Docker Image:From the project's root directory, run the following command. This will read the Dockerfile, install all dependencies, and package the application.docker build -t ai-doctor-api .
-Run the Docker Container:Once the image is built, run it as a container:docker run --env-file .env -p 8000:8000 -d --name doctor-api-container ai-doctor-api
---env-file .env: This securely passes your API keys from the .env file into the container.-p 8000:8000: This maps port 8000 on your local machine to port 8000 inside the container.-d: Runs the container in detached mode (in the background).The API will now be running and accessible at http://localhost:8000.Interacting with the APIFastAPI automatically generates interactive API documentation (using Swagger UI). This is the easiest way to test the service.Open the Docs:With the application running (either locally or in Docker), navigate to http://127.0.0.1:8000/docs in your web browser.Test the Endpoint:You will see the /process-consultation/ endpoint. Click to expand it.Click the "Try it out" button.You will see fields to upload an image file and an audio file.Choose your files and click the "Execute" button.Scroll down to see the server's JSON response, which will include the transcription, the doctor's analysis, and the Base64-encoded audio.
+
+Setting Up a Python Virtual Environment
+It is highly recommended to use a virtual environment to manage project dependencies.
+
+Using pip and venv (Recommended)
+Create a Virtual Environment:
+
+python -m venv venv
+
+Activate the Virtual Environment:
+
+macOS/Linux: source venv/bin/activate
+
+Windows: venv\Scripts\activate
+
+Install Dependencies:
+
+pip install -r requirements.txt
+
+Running the Application
+Option 1: Running Locally with Uvicorn
+This method is ideal for development as it provides auto-reloading when you make code changes.
+
+Start the Server:
+Make sure your virtual environment is activated and you are in the project's root directory. Then run:
+
+uvicorn main:app --reload
+
+The API will now be running and accessible at http://127.0.0.1:8000.
+
+Option 2: Running with Docker
+This is the recommended method for a consistent and portable deployment.
+
+Build the Docker Image:
+From the project's root directory, run the following command. This will read the Dockerfile, install all dependencies, and package the application.
+
+docker build -t ai-doctor-api .
+
+Run the Docker Container:
+Once the image is built, run it as a container:
+
+docker run --env-file .env -p 8000:8000 -d --name doctor-api-container ai-doctor-api
+
+--env-file .env: This securely passes your API keys from the .env file into the container.
+
+-p 8000:8000: This maps port 8000 on your local machine to port 8000 inside the container.
+
+-d: Runs the container in detached mode (in the background).
+
+The API will now be running and accessible at http://localhost:8000.
+
+Interacting with the API
+FastAPI automatically generates interactive API documentation (using Swagger UI). This is the easiest way to test the service.
+
+Open the Docs:
+With the application running (either locally or in Docker), navigate to http://127.0.0.1:8000/docs in your web browser.
+
+Test the Endpoint:
+
+You will see the /process-consultation/ endpoint. Click to expand it.
+
+Click the "Try it out" button.
+
+You will see fields to upload an image file and an audio file.
+
+Choose your files and click the "Execute" button.
+
+Scroll down to see the server's JSON response, which will include the transcription, the doctor's analysis, and the Base64-encoded audio.
