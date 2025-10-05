@@ -1,154 +1,153 @@
-# Project Setup Guide
+AI Doctor 2.0 - Voice and Vision FastAPI Service
+This project provides a backend API service that simulates a consultation with an AI doctor. It accepts a user's spoken question and a related image, processes them through advanced AI models, and returns a text transcription, a medical analysis, and a spoken audio response.
 
-This guide provides step-by-step instructions to set up your project environment, including the installation of FFmpeg and PortAudio across macOS, Linux, and Windows, as well as setting up a Python virtual environment using Pipenv, pip, or conda.
+This guide provides step-by-step instructions to set up your project environment, including the installation of FFmpeg and PortAudio, setting up a Python virtual environment, and running the application.
 
-## Table of Contents
+Table of Contents
+API Architecture
 
-1. [Installing FFmpeg and PortAudio](#installing-ffmpeg-and-portaudio)
-   - [macOS](#macos)
-   - [Linux](#linux)
-   - [Windows](#windows)
-2. [Setting Up a Python Virtual Environment](#setting-up-a-python-virtual-environment)
-   - [Using Pipenv](#using-pipenv)
-   - [Using pip and venv](#using-pip-and-venv)
-   - [Using Conda](#using-conda)
-3. [Running the application](#project-phases-and-python-commands)
+Prerequisites: Installing FFmpeg and PortAudio
 
-## Installing FFmpeg and PortAudio
+macOS
 
-### macOS
+Linux
 
-1. **Install Homebrew** (if not already installed):
+Windows
 
-   ```bash
-   /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-   ```
+Setting Up The Project
 
-2. **Install FFmpeg and PortAudio:**
+Environment Variables
 
-   ```bash
-   brew install ffmpeg portaudio
-   ```
+Python Virtual Environment
 
+Running the Application
 
-### Linux
+Option 1: Running Locally with Uvicorn
+
+Option 2: Running with Docker
+
+Interacting with the API
+
+API Architecture
+The application is built as a FastAPI service that exposes a single primary endpoint. When a client sends an image and an audio file, the following happens:
+
+Speech-to-Text: The audio file is transcribed into text using the Groq API (running OpenAI's Whisper model).
+
+Multimodal Analysis: The transcribed text and the user's image are sent to a multimodal vision model on Groq to generate a medical analysis.
+
+Text-to-Speech: The AI-generated text analysis is converted into natural-sounding speech using the ElevenLabs API.
+
+JSON Response: The API returns a JSON object containing the transcription, the doctor's text response, and the doctor's audio response (as a Base64 encoded string).
+
+Prerequisites: Installing FFmpeg and PortAudio
+These system-level libraries are required for audio processing and microphone access.
+
+macOS
+Install Homebrew (if not already installed):
+
+/bin/bash -c "$(curl -fsSL [https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh](https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh))"
+
+Install FFmpeg and PortAudio:
+
+brew install ffmpeg portaudio
+
+Linux
 For Debian-based distributions (e.g., Ubuntu):
 
-1. **Update the package list**
+Update the package list:
 
-```
 sudo apt update
-```
 
-2. **Install FFmpeg and PortAudio:**
-```
+Install FFmpeg and PortAudio:
+
 sudo apt install ffmpeg portaudio19-dev
-```
 
-### Windows
+Windows
+Download and Set Up FFmpeg:
 
-#### Download FFmpeg:
-1. Visit the official FFmpeg download page: [FFmpeg Downloads](https://ffmpeg.org/download.html)
-2. Navigate to the Windows builds section and download the latest static build.
+Visit the official FFmpeg Downloads page and get a Windows build.
 
-#### Extract and Set Up FFmpeg:
-1. Extract the downloaded ZIP file to a folder (e.g., `C:\ffmpeg`).
-2. Add the `bin` directory to your system's PATH:
-   - Search for "Environment Variables" in the Start menu.
-   - Click on "Edit the system environment variables."
-   - In the System Properties window, click on "Environment Variables."
-   - Under "System variables," select the "Path" variable and click "Edit."
-   - Click "New" and add the path to the `bin` directory (e.g., `C:\ffmpeg\bin`).
-   - Click "OK" to apply the changes.
+Extract the files to a permanent location (e.g., C:\ffmpeg).
 
-#### Install PortAudio:
-1. Download the PortAudio binaries from the official website: [PortAudio Downloads](http://www.portaudio.com/download.html)
-2. Follow the installation instructions provided on the website.
+Add the bin directory from the extracted folder (e.g., C:\ffmpeg\bin) to your system's PATH environment variable.
 
----
+Install PortAudio:
 
-## Setting Up a Python Virtual Environment
+Download the appropriate binaries from the official PortAudio Downloads page.
 
-### Using Pipenv
-1. **Install Pipenv (if not already installed):**  
-```
-pip install pipenv
-```
+Follow the installation instructions provided.
 
-2. **Install Dependencies with Pipenv:** 
+Setting Up The Project
+Environment Variables
+Before running the application, you need to provide API keys for the services it uses. Create a file named .env in the root of the project directory and add your keys like this:
 
-```
-pipenv install
-```
+GROQ_API_KEY="your_groq_api_key_here"
+ELEVEN_API_KEY="your_elevenlabs_api_key_here"
 
-3. **Activate the Virtual Environment:** 
+Setting Up a Python Virtual Environment
+It is highly recommended to use a virtual environment to manage project dependencies.
 
-```
-pipenv shell
-```
+Using pip and venv (Recommended)
+Create a Virtual Environment:
 
----
-
-### Using `pip` and `venv`
-#### Create a Virtual Environment:
-```
 python -m venv venv
-```
 
-#### Activate the Virtual Environment:
-**macOS/Linux:**
-```
-source venv/bin/activate
-```
+Activate the Virtual Environment:
 
-**Windows:**
-```
-venv\Scripts\activate
-```
+macOS/Linux: source venv/bin/activate
 
-#### Install Dependencies:
-```
+Windows: venv\Scripts\activate
+
+Install Dependencies:
+
 pip install -r requirements.txt
-```
 
----
+Running the Application
+Option 1: Running Locally with Uvicorn
+This method is ideal for development as it provides auto-reloading when you make code changes.
 
-### Using Conda
-#### Create a Conda Environment:
-```
-conda create --name myenv python=3.11
-```
+Start the Server:
+Make sure your virtual environment is activated and you are in the project's root directory. Then run:
 
-#### Activate the Conda Environment:
-```
-conda activate myenv
-```
+uvicorn main:app --reload
 
-#### Install Dependencies:
-```
-pip install -r requirements.txt
-```
+The API will now be running and accessible at http://127.0.0.1:8000.
 
+Option 2: Running with Docker
+This is the recommended method for a consistent and portable deployment.
 
-# Project Phases and Python Commands
+Build the Docker Image:
+From the project's root directory, run the following command. This will read the Dockerfile, install all dependencies, and package the application.
 
-## Phase 1: Brain of the doctor
-```
-python brain_of_the_doctor.py
-```
+docker build -t ai-doctor-api .
 
-## Phase 2: Voice of the patient
-```
-python voice_of_the_patient.py
-```
+Run the Docker Container:
+Once the image is built, run it as a container:
 
-## Phase 3: Voice of the doctor
-```
-python voice_of_the_doctor.py
-```
+docker run --env-file .env -p 8000:8000 -d --name doctor-api-container ai-doctor-api
 
-## Phase 4: Setup Gradio UI
-```
-python gradio_app.py
-```
+--env-file .env: This securely passes your API keys from the .env file into the container.
 
+-p 8000:8000: This maps port 8000 on your local machine to port 8000 inside the container.
+
+-d: Runs the container in detached mode (in the background).
+
+The API will now be running and accessible at http://localhost:8000.
+
+Interacting with the API
+FastAPI automatically generates interactive API documentation (using Swagger UI). This is the easiest way to test the service.
+
+Open the Docs:
+With the application running (either locally or in Docker), navigate to http://127.0.0.1:8000/docs in your web browser.
+
+Test the Endpoint:
+
+You will see the /process-consultation/ endpoint. Click to expand it.
+
+Click the "Try it out" button.
+
+You will see fields to upload an image file and an audio file.
+
+Choose your files and click the "Execute" button.
+
+Scroll down to see the server's JSON response, which will include the transcription, the doctor's analysis, and the Base64-encoded audio.
